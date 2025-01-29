@@ -17,6 +17,7 @@ const userSchema = new Schema<Tuser, UserModel>(
     password: {
       type: String,
       required: [true, 'Password is required'],
+      select: 0,
     },
     role: {
       type: String,
@@ -26,6 +27,9 @@ const userSchema = new Schema<Tuser, UserModel>(
     isBlocked: {
       type: Boolean,
       default: false,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
   },
   {
@@ -44,7 +48,22 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.statics.isUserExistByCustomId = async function (email: string) {
-  return await User.findOne({ email });
+  return await User.findOne({ email }).select('+password');
+};
+
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+userSchema.statics.isJWTIssuedBeforePasswordChange = async function (
+  passwordChangeTimeStamp: Date,
+  jwtIssuedTimeStamps: number,
+) {
+  const changedPasswordAt = new Date(passwordChangeTimeStamp).getTime() / 1000;
+  return changedPasswordAt > jwtIssuedTimeStamps;
 };
 
 export const User = model<Tuser, UserModel>('User', userSchema);
