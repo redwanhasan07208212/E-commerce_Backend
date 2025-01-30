@@ -18,14 +18,16 @@ const auth = (...requiredRoles: TUserRole[]) =>
     }
 
     const token = bearerToken.split(' ')[1];
+    console.log(token);
 
     const decoded = jwt.verify(
       token,
       config.JWT_ACCESS_SECRET as string,
     ) as JwtPayload;
 
-    const { role, userEmail, iat } = decoded;
-    const user = await User.isUserExistByCustomId(userEmail);
+    const { role, email } = decoded;
+    console.log(email);
+    const user = await User.isUserExistByCustomId(email);
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
     }
@@ -34,15 +36,15 @@ const auth = (...requiredRoles: TUserRole[]) =>
       throw new AppError(httpStatus.NOT_FOUND, 'This user is blocked');
     }
 
-    if (
-      user.passwordChangedAt &&
-      User.isJWTIssuedBeforePasswordChange(
-        user.passwordChangedAt,
-        iat as number,
-      )
-    ) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not Authorized');
-    }
+    // if (
+    //   user.passwordChangedAt &&
+    //   User.isJWTIssuedBeforePasswordChange(
+    //     user.passwordChangedAt,
+    //     iat as number,
+    //   )
+    // ) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'You are not Authorized');
+    // }
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not Authorized');
     }

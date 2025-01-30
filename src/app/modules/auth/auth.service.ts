@@ -34,7 +34,7 @@ const loginUser = async (payLoad: TLoginUser) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     id: user._id,
-    userEmail: user.email,
+    email: user.email,
     role: user.role,
   };
   const token = createToken(
@@ -60,8 +60,8 @@ const refreshToken = async (token: string) => {
     config.JWT_REFRESH_SECRET as string,
   ) as JwtPayload;
 
-  const { userEmail, iat } = decoded;
-  const user = await User.isUserExistByCustomId(userEmail);
+  const { email, iat } = decoded;
+  const user = await User.isUserExistByCustomId(email);
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
   }
@@ -81,7 +81,7 @@ const refreshToken = async (token: string) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     id: user._id,
-    userEmail: user.email,
+    email: user.email,
     role: user.role,
   };
   const accessToken = createToken(
@@ -111,7 +111,7 @@ const registerUserIntoDb = async (payload: Tuser) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     id: newUser._id,
-    userEmail: newUser.email,
+    email: newUser.email,
     role: newUser.role,
   };
   const accessToken = createToken(
@@ -140,7 +140,7 @@ const changePassword = async (
   userData: JwtPayload,
   payLoad: { oldPassword: string; newPassword: string },
 ) => {
-  const user = await User.isUserExistByCustomId(userData?.userEmail);
+  const user = await User.isUserExistByCustomId(userData?.email);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found');
