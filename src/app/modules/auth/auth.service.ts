@@ -35,6 +35,9 @@ const loginUser = async (payLoad: TLoginUser) => {
     // @ts-ignore
     id: user._id,
     email: user.email,
+    phone: user.phone,
+    password: user.password,
+    address: user.address,
     role: user.role,
   };
   const token = createToken(

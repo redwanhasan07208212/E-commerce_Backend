@@ -3,13 +3,9 @@ import { TOrder } from './order.interface';
 
 const orderSchema = new Schema<TOrder>(
   {
-    customer: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
-    },
-    phone: {
-      type: String,
       required: true,
     },
     product: {
@@ -21,14 +17,15 @@ const orderSchema = new Schema<TOrder>(
       type: Number,
       required: true,
     },
-    deliveryAddress: {
-      type: String,
-      required: true,
-    },
     paymentMethod: {
       type: String,
-      enum: ['Cash_On_Delivery', 'Surjo_Pay'],
+      enum: ['Cash_On_Delivery', 'ShurjoPay'],
       default: 'Cash_On_Delivery',
+    },
+    status: {
+      type: String,
+      enum: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+      default: 'PENDING',
     },
     paymentStatus: {
       type: String,
@@ -36,25 +33,29 @@ const orderSchema = new Schema<TOrder>(
       default: 'Pending',
     },
     transactionId: {
-      type: String,
-      unique: true,
-      required: true,
+      type: {
+        id: String,
+        transactionStatus: String,
+        bank_status: String,
+        sp_code: String,
+        sp_message: String,
+        method: String,
+        date_time: String,
+      },
+      default: null, // Ensure default is null
     },
     subTotal: {
       type: Number,
-      required: true,
     },
     shippingTotal: {
       type: Number,
-      required: true,
     },
     grandTotal: {
       type: Number,
-      required: true,
     },
     isDeleted: {
       type: Boolean,
-      required: true,
+      default: false,
     },
   },
   {

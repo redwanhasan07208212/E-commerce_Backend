@@ -5,7 +5,6 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/queryBuilder';
 
 export const getMyProfile = async (userData: JwtPayload) => {
-  console.log(userData);
   const user = await User.findOne({ email: userData.email }).select(
     '-password',
   );
@@ -53,7 +52,6 @@ export const toggleBlockUser = async (
   userId: string,
   requester: JwtPayload,
 ) => {
-  console.log(requester);
   if (userId === requester.id.toString()) {
     throw new AppError(httpStatus.FORBIDDEN, 'You cannot block yourself');
   }

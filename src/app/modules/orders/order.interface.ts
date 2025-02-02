@@ -1,14 +1,21 @@
 import { Types } from 'mongoose';
 
 export type TOrder = {
-  customer: Types.ObjectId;
-  phone: string;
+  user: Types.ObjectId;
   product: Types.ObjectId;
   quantity: number;
-  deliveryAddress: string;
-  paymentMethod: 'Cash_On_Delivery' | 'Surjo_Pay';
+  paymentMethod: 'Cash_On_Delivery' | 'ShurjoPay';
+  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   paymentStatus: 'Paid' | 'Cancelled' | 'Failed' | 'Pending';
-  transactionId: string;
+  transactionId: {
+    id: string;
+    transactionStatus: string;
+    bank_status?: string;
+    sp_code?: string;
+    sp_message?: string;
+    method?: string;
+    date_time?: string;
+  };
   subTotal: number;
   shippingTotal: number;
   grandTotal: number;

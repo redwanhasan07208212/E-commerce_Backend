@@ -4,7 +4,8 @@ import sendResponse from '../../utils/sendResponse';
 import { orderService } from './order.service';
 
 const createOrder = catchAsync(async (req, res) => {
-  const result = await orderService.createOrderIntoDb(req.body);
+  const user = req.user;
+  const result = await orderService.createOrderIntoDb(req.body, user, req.ip!);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -14,8 +15,19 @@ const createOrder = catchAsync(async (req, res) => {
   });
 });
 
+const verifyPayment = catchAsync(async (req, res) => {
+  const order = await orderService.verifyPayment(req.query.order_id as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Order is Created Successfully',
+    data: order,
+  });
+});
+
 const getAllOrder = catchAsync(async (req, res) => {
-  const result = await orderService.getAllOrderIntoDb(req.query);
+  const result = await orderService.getAllOrdersFromDb(req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -24,9 +36,8 @@ const getAllOrder = catchAsync(async (req, res) => {
   });
 });
 
-const getSingleOrder = catchAsync(async (req, res) => {
-  const { orderId } = req.params;
-  const result = await orderService.getSingleOrderIntoDb(orderId);
+const getMyOrder = catchAsync(async (req, res) => {
+  const result = await orderService.getMyOrdersFromDb(req.user, req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -35,32 +46,36 @@ const getSingleOrder = catchAsync(async (req, res) => {
   });
 });
 
-const updateOrder = catchAsync(async (req, res) => {
+const changeOrderStatus = catchAsync(async (req, res) => {
   const { orderId } = req.params;
-  const result = await orderService.updateOrderIntoDb(orderId, req.body);
+  const { status } = req.body;
+  const result = await orderService.changeOrderStatus(orderId, status);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Order is updated Successfully',
+    message: 'Order status updated successfully',
     data: result,
   });
 });
 
 const deleteOrder = catchAsync(async (req, res) => {
   const { orderId } = req.params;
-  const result = await orderService.deleteOrderIntoDb(orderId);
+  const result = await orderService.deleteOrderFromDb(orderId);
+
   sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: httpStatus.NO_CONTENT,
     success: true,
-    message: 'Order is deleted Successfully',
+    message: 'Order deleted successfully',
     data: result,
   });
 });
 
 export const orderController = {
   createOrder,
+  verifyPayment,
   getAllOrder,
-  getSingleOrder,
-  updateOrder,
+  getMyOrder,
+  changeOrderStatus,
   deleteOrder,
 };

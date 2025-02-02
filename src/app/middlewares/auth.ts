@@ -18,7 +18,6 @@ const auth = (...requiredRoles: TUserRole[]) =>
     }
 
     const token = bearerToken.split(' ')[1];
-    console.log(token);
 
     const decoded = jwt.verify(
       token,
@@ -48,7 +47,7 @@ const auth = (...requiredRoles: TUserRole[]) =>
     if (requiredRoles && !requiredRoles.includes(role)) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not Authorized');
     }
-    req.user = decoded as JwtPayload;
+    req.user = user;
     next();
   });
 export default auth;
